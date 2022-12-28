@@ -1,0 +1,79 @@
+{% extends 'base.html' %} {% block content %}
+    
+
+
+<p>this is just a test of image  processing model</p>
+
+<h1>list_averages</h1>
+{{list_averages}}
+<hr>
+{% for item in list_averages %}
+<p>area : {{item.area}}  -perimeter :  {{item.perimeter}}</p>
+{% endfor %}
+
+<hr>
+<h1>list_percentages</h1>
+{{list_percentages}}
+<hr>
+{% for item in list_percentages %}
+<p>areas : {{item.areas}}  -perimeters :  {{item.perimeters}}</p>
+{% endfor %}
+<hr>
+
+
+<div >
+<div class="container">
+    <canvas id="myChart" width="200" height="100"></canvas>
+  </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('myChart');
+  
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['list 1', 'list 2', 'list 3', 'list 4'],
+        datasets: [{
+          label: '# perimeters',
+          data: [
+            {% for item in list_percentages %}
+            {{item.perimeters}},
+            {% endfor %} 
+          ],
+          borderWidth: 3,
+          fill: true,
+          borderColor: 'red'
+        },
+        {
+          label: '# areas',
+          data: [
+            {% for item in list_percentages %}
+            {{item.areas}},
+            {% endfor %} 
+          ],
+          borderWidth: 3,
+          fill: true,
+          borderColor: 'blue'
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+          
+        }
+      }
+    });
+  </script>
+<script>
+
+
+  
+</script>
+
+{% endblock %}
