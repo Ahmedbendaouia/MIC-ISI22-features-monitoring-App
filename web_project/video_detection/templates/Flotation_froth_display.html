@@ -1,0 +1,194 @@
+{% extends 'base.html' %} {% block content %}
+<title>Flotation Froth Display</title>
+<div class="row">
+  <div class="col-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">flotation froth</h5>
+        <!--<img
+          src="{% url 'flotation_froth_frame'  %}"
+          class="w-100"
+          title="flotation froth"
+          allowfullscreen
+        />-->
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Otsu thresholding</h5>
+        <!-- <img
+          src=" {% url 'Otsu_frame'  %}"
+          class="w-100"
+          title="Otsu thresholding"
+        />-->
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Sparse optical flow</h5>
+        <!--<img
+          src="{% url 'spare_frame'  %}"
+          class="w-100"
+          title="Sparse optical flow"
+        />-->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- la mousse  -->
+<div class="row">
+  <div class="col">
+    <div class="card shadow-lg">
+      <hr class="my-0" />
+      <div class="card-body">
+        <h5 class="card-title">Velocity monitoring</h5>
+        <canvas id="myChart" style="height: 300px"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script>
+  function getRandomColor() {
+    var letters = "0123456789ABCDEF".split("");
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+  //To register it globally to all charts
+  Chart.register(ChartDataLabels);
+  // Change default options for ALL charts
+  Chart.defaults.set("plugins.streaming", {
+    duration: 20000,
+  });
+  var ctx = document.getElementById("myChart").getContext("2d");
+  const chart = new Chart(ctx, {
+    type: "line", // 'line', 'bar', 'bubble' and 'scatter' types are supported
+    data: {
+      datasets: [
+        {
+          label: "vx",
+          data: [], // empty at the beginning
+          fillColor: "rgba(220,220,220,0.5)",
+          backgroundColor: getRandomColor(),
+          borderColor: getRandomColor(),
+          color: getRandomColor(),
+          cubicInterpolationMode: "monotone",
+        },
+        {
+          label: "vy",
+          data: [], // empty at the beginning
+          borderColor: getRandomColor(),
+          backgroundColor: getRandomColor(),
+          color: getRandomColor(),
+          cubicInterpolationMode: "monotone",
+        },
+        {
+          label: "v",
+          data: [], // empty at the beginning
+          backgroundColor: "rgb(70, 120, 135,0.1)",
+          borderColor: getRandomColor(),
+          color: getRandomColor(),
+          cubicInterpolationMode: "monotone",
+          borderDash: [8, 9],
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      plugins: {
+        subtitle: {
+          display: true,
+          text: "Custom Chart Subtitle",
+        },
+        // Change options for ALL axes of THIS CHART
+        streaming: {
+          duration: 20000,
+        },
+        datalabels: {
+          // This code is used to display data values (datalabels)
+          anchor: "end",
+          align: "top",
+          formatter: function (value) {
+            //this is used to format the values in a streaming chartjs to only see the y values
+            //console.log(value);
+            return value.y.toFixed(3);
+          },
+          font: {
+            weight: "bold",
+            size: 14,
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: "realtime",
+          title: {
+            display: true,
+            text: "Time ",
+            font: {
+              size: 16,
+            },
+          },
+          // Change options only for THIS AXIS
+          realtime: {
+            //delay: 2000,
+            duration: 20000,
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "speed m/s",
+            font: {
+              size: 16,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  var socket = new WebSocket("ws://localhost:8000/ws/flotationFroth/");
+  //check the state of the connection
+  //0: CONNECTING The connection is not yet open.
+  //1: OPEN The connection is open and ready to communicate.
+  //2: CLOSING The connection is in the process of closing.
+  //3: CLOSED The connection is closed or couldn't be opened.
+  console.log(socket.readyState);
+
+  // When the WebSocket receives new data, update the chart
+  socket.onmessage = function (event) {
+    var data = JSON.parse(event.data);
+    console.log(data);
+    chart.data.datasets[0].data.push({
+      x: Date.now(),
+      y: data.vx,
+    });
+    chart.data.datasets[1].data.push({
+      x: Date.now(),
+      y: data.vy,
+    });
+    chart.data.datasets[2].data.push({
+      x: Date.now(),
+      y: data.v,
+    });
+    chart.update();
+  };
+</script>
+
+<!-- End Container fluid  -->
+
+{% endblock %}

@@ -1,0 +1,314 @@
+{% extends 'base.html' %} {% block content %} {% load static %}
+<title>Bubble Size Monitoring</title>
+<div class="row justify-content-center">
+  <div class="row">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Otsu Thresholding</h5>
+          <img
+            id="otsu"
+            src="{% static 'app_resources\images\output\Otsu_thresholding_img.png'%}"
+            class="w-100"
+            title="closing image"
+            allowfullscreen
+          />
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Shadow</h5>
+          <img
+            id="shadow"
+            src="{% static 'app_resources\images\output\shadow_img.png'%}"
+            class="w-100"
+            title="Shadow image"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Segmented froth</h5>
+          <img
+            id="segmented"
+            src="{% static 'app_resources\images\output\segmented_froth_img.png'%}"
+            class="w-100"
+            title="opening image"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Card -->
+    <div class="col-6">
+      <div class="card shadow-lg">
+        <hr class="my-0" />
+        <div class="card-body">
+          <h5 class="card-title">List Averages</h5>
+          <canvas id="myChart1" style="height: 500px"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Card -->
+    <div class="col-6">
+      <div class="card shadow-lg rounded">
+        <hr class="my-0" />
+        <div class="card-body">
+          <h5 class="card-title">List Percentages</h5>
+          <canvas id="myChart2" style="height: 500px"></canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Card -->
+  </div>
+  <div class="row">
+    <!-- Card -->
+    <div class="col">
+      <div class="card shadow-lg">
+        <hr class="my-0" />
+        <div class="card-body">
+          <h5 class="card-title">Bubble size</h5>
+          <canvas id="myChart3" style="height: 500px"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--chartjs plugins-->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!--chartjs-streaming plugins-->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <script>
+    function getRandomColor() {
+      var letters = "0123456789ABCDEF".split("");
+      var color = "#";
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+    //To register it globally to all charts
+    Chart.register(ChartDataLabels);
+    // Change default options for ALL charts
+    Chart.defaults.set("plugins.streaming", {
+      duration: 20000,
+    });
+
+    // Set up the chart 1
+    var ctx1 = document.getElementById("myChart1").getContext("2d");
+    const chart1 = new Chart(ctx1, {
+      type: "bar",
+      data: {
+        labels: ["Tiny", "Small", "Medium", "Larg"], // labels for the x-axis
+        datasets: [
+          {
+            label: "area",
+            data: [],
+            backgroundColor: getRandomColor(),
+            color: getRandomColor(),
+          },
+          {
+            label: "perimeter",
+            data: [],
+            backgroundColor: getRandomColor(),
+            color: getRandomColor(),
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            // This code is used to display data values (datalabels)
+            anchor: "end",
+            align: "top",
+            formatter: function (value) {
+              //console.log(value);
+              return value.toFixed(3);
+            },
+            font: {
+              weight: "bold",
+              size: 14,
+            },
+          },
+        },
+        scales: {
+          xAxes: [
+            {
+              type: "linear",
+              position: "bottom",
+            },
+          ],
+        },
+      },
+    });
+    // Set up the chart 2
+    var ctx2 = document.getElementById("myChart2").getContext("2d");
+    const chart2 = new Chart(ctx2, {
+      type: "bar",
+      data: {
+        labels: ["Tiny", "Small", "Medium", "Larg"], // labels for the x-axis
+        datasets: [
+          {
+            label: "areas",
+            data: [],
+            backgroundColor: getRandomColor(),
+            color: getRandomColor(),
+          },
+          {
+            label: "perimeters",
+            data: [],
+            backgroundColor: getRandomColor(),
+            color: getRandomColor(),
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            // This code is used to display data values (datalabels)
+            anchor: "end",
+            align: "top",
+            formatter: function (value) {
+              //console.log(value);
+              return value.toFixed(3);
+            },
+            font: {
+              weight: "bold",
+              size: 14,
+            },
+          },
+        },
+        scales: {
+          xAxes: [
+            {
+              type: "linear",
+              position: "bottom",
+            },
+          ],
+        },
+      },
+    });
+
+    //the chart 3
+    var ctx3 = document.getElementById("myChart3").getContext("2d");
+    const chart3 = new Chart(ctx3, {
+      type: "line", // 'line', 'bar', 'bubble' and 'scatter' types are supported
+      data: {
+        datasets: [
+          {
+            label: "bubble total number",
+            data: [], // empty at the beginning
+            borderColor: "rgb(102, 255, 235)",
+            color:"rgb(102, 255, 235)",
+            backgroundColor: "rgb(145, 225, 255,0.3)",            
+            cubicInterpolationMode: "monotone",
+            fill:true,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            // This code is used to display data values (datalabels)
+            anchor: "end",
+            align: "top",
+            formatter: function (value) {
+              //this is used to format the values in a streaming chartjs to only see the y values
+              //console.log(value);
+              return value.y;
+            },
+            font: {
+              weight: "bold",
+              size: 14,
+            },
+          },
+          subtitle: {
+            display: true,
+            text: "Custom Chart Subtitle",
+          },
+          // Change options for ALL axes of THIS CHART
+          streaming: {
+            duration: 20000,
+          },
+        },
+        scales: {
+          x: {
+            type: "realtime",
+            // Change options only for THIS AXIS
+            realtime: {
+              duration: 20000,
+            },
+          },
+        },
+      },
+    });
+
+    // Set up the WebSocket connection
+    var socket = new WebSocket("ws://localhost:8000/ws/image_proccces/");
+
+    // When the WebSocket receives new data, update the charts
+    socket.onmessage = function (event) {
+      var data = JSON.parse(event.data);
+
+      console.log(data);
+
+      //document.getElementById("segmented").src = data.seg_img;
+      //document.getElementById("shadow").src = data.shadow_img;
+      //document.getElementById("otsu").src = data.Otsu_img;
+
+      chart1.data.datasets[0].data[0] = data.list_averages[0].area;
+      chart1.data.datasets[0].data[1] = data.list_averages[1].area;
+      chart1.data.datasets[0].data[2] = data.list_averages[2].area;
+      chart1.data.datasets[0].data[3] = data.list_averages[3].area;
+
+      chart1.data.datasets[1].data[0] = data.list_averages[0].perimeter;
+      chart1.data.datasets[1].data[1] = data.list_averages[1].perimeter;
+      chart1.data.datasets[1].data[2] = data.list_averages[2].perimeter;
+      chart1.data.datasets[1].data[3] = data.list_averages[3].perimeter;
+
+      chart1.update();
+
+      //updating the chart 2
+      chart2.data.datasets[0].data[0] = data.list_percentages[0].areas;
+      chart2.data.datasets[0].data[1] = data.list_percentages[1].areas;
+      chart2.data.datasets[0].data[2] = data.list_percentages[2].areas;
+      chart2.data.datasets[0].data[3] = data.list_percentages[3].areas;
+
+      chart2.data.datasets[1].data[0] = data.list_percentages[0].perimeters;
+      chart2.data.datasets[1].data[1] = data.list_percentages[1].perimeters;
+      chart2.data.datasets[1].data[2] = data.list_percentages[2].perimeters;
+      chart2.data.datasets[1].data[3] = data.list_percentages[3].perimeters;
+
+      chart2.update();
+
+      //updating the chart 3
+      chart3.data.datasets[0].data.push({
+        x: Date.now(),
+        y: data.total_number,
+      });
+      chart3.update();
+    };
+
+    function updateImage() {
+      document.getElementById("segmented").src =
+        "{% static 'app_resources/images/output/segmented_froth_img.png'%}";
+      document.getElementById("shadow").src =
+        "{% static 'app_resources/images/output/shadow_img.png'%}";
+      document.getElementById("otsu").src =
+        "{% static 'app_resources/images/output/Otsu_thresholding_img.png'%}";
+    }
+    window.setInterval(updateImage, 1000);
+  </script>
+
+  {% endblock %}
+</div>

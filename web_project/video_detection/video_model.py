@@ -1,11 +1,10 @@
-import threading
 import cv2 as cv
 import numpy as np
 import time
 import math
-import cv2
 
 
+#this class handles the video streaming using openCv and a video feed path as un argument for it's constractor
 class video_feed(object):
 
     def __init__(self, pathVideo):
@@ -137,18 +136,17 @@ class video_feed(object):
         cv.putText(speed, text_vy, (50, 100), font, fontScale, (255, 0, 0), 3)
         cv.putText(speed, text_v, (50, 150), font, fontScale, (255, 0, 0), 3)
         
-        #
-        speed_list={'vx':average_vx,'vy':average_vy,'v':avrage_v}
-        
-        
-        _, frame = cv2.imencode('.jpg', self.frame)
-        _, gray = cv2.imencode('.jpg', self.gray)
-        _, output = cv2.imencode('.jpg', self.output)
+                
+        speed_list={"vx":average_vx,"vy":average_vy,"v":avrage_v}
+                
+        _, frame = cv.imencode('.jpg', self.frame)
+        _, gray = cv.imencode('.jpg', self.gray)
+        _, output = cv.imencode('.jpg', self.output)
 
         return speed_list, frame.tobytes(), gray.tobytes(
         ), output.tobytes()
-
-
+        
+ 
     def crop_image(self, Image, offsetHauteur, offsetLargeur):
         hauteur = Image.shape[0]
         largeur = Image.shape[1]
@@ -159,21 +157,21 @@ class video_feed(object):
         return croped_image
 
 
-#method to return Sparse optical flow frame as an image/ipeg type 
+#method to return Sparse optical flow frame as an image/jpg type 
 def gen_spare(video_feed):
     while True:
         speed, frame, gray, output = video_feed.get_frames()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + output + b'\r\n\r\n')
 
-#method to return  Otsu thresholding frame as an image/ipeg type 
+#method to return  Otsu thresholding frame as an image/jpg type 
 def gen_Otsu(video_feed):
     while True:
         speed, frame, gray, output = video_feed.get_frames()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + gray + b'\r\n\r\n')
 
-#method to return flotation froth frame as an image/ipeg type 
+#method to return flotation froth frame as an image/jpg type 
 def gen_frame(video_feed):
     while True:
         speed, frame, gray, output = video_feed.get_frames()
@@ -183,7 +181,8 @@ def gen_frame(video_feed):
 #method to return speed as a list of avarage_vx ,vy and v
 def gen_speed(video_feed):    
     while True:
-        speed, frame, gray, output = video_feed.get_frames()        
-        print(speed)
+        speed, frame, gray, output = video_feed.get_frames()                
         yield speed
-       
+        
+
+        

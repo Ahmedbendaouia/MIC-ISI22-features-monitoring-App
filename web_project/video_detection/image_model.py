@@ -83,22 +83,22 @@ def image_segmentation(path_img, size_img, display_results=True):
     if display_results == True:
         img1 = np.copy(img)
         img1[markers1 == -1] = [0, 0, 255]
-        #cv2.imshow("img1",img1)
+        ##cv2.imshow("img1",img1)
         #cv2.imshow("gray_img",gray_img)
         #cv2.imshow("img_sharpen",img_sharpen)
         #cv2.imshow("img_blur",img_blur)
         #cv2.imshow("img_AT_1",img_AT_1)
-        #cv2.imshow("closin1",closing1)
+        ##cv2.imshow("closin1",closing1)
         #cv2.imshow("sure_fg1",sure_fg1)
         #cv2.imshow("opening",opening)
         #cv2.imshow("sure_fg2",sure_fg2)
         #cv2.imshow("sure_bg",sure_bg)
-        #cv2.imshow("markers1_img",markers1_img)
+        ##cv2.imshow("markers1_img",markers1_img)
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    return markers1, gray_img
+    return markers1, gray_img, img1, opening, markers1_img
 
 
 def bubble_size_measurements(markers, gray_img, list_max_group_perimeters,
@@ -214,24 +214,36 @@ def bubble_size_distribution(path_img,
                              pixels_to_mm,
                              display_results=True):
     # segment the image
-    markers, gray_img = image_segmentation(path_img, size_img, display_results)
+    markers, gray_img, img1, opening, markers1_img = image_segmentation(
+        path_img, size_img, display_results)
     # extract bubble size measurements
     total_number, list_percentages, list_averages = bubble_size_measurements(
         markers, gray_img, list_max_group_perimeters, list_max_group_areas,
         pixels_to_mm)
 
-    
-    mark_img_path = r'video_detection\statics\images\output\mark_img_output.png'
-    gray_img_path = r'video_detection\statics\images\output\gray_img_output.png'
-    
-    cv2.imwrite(mark_img_path,markers)
-    cv2.imwrite(gray_img_path,gray_img)
-    
+    segmented_froth_img = r'static\app_resources\images\output\segmented_froth_img.png'
+    Otsu_thresholding_img = r'static\app_resources\images\output\Otsu_thresholding_img.png'
+    shadow_img = r'static\app_resources\images\output\shadow_img.png'
+
+    #save the result images in the static folder
+    cv2.imwrite(segmented_froth_img, img1)
+    cv2.imwrite(Otsu_thresholding_img, opening)
+    cv2.imwrite(shadow_img, markers1_img)
+
+    #The reason behind saving the imgs  in the django statics folder (root_folder) is that when DEBUG = False the statics in the static folder should be also in the django statics
+    #Which means any change should be on both sides and that's also a problem that should be fixed
+    segmented_froth_img2 = r'Django_statics\app_resources\images\output\segmented_froth_img.png'
+    Otsu_thresholding_img2 = r'Django_statics\app_resources\images\output\Otsu_thresholding_img.png'
+    shadow_img2 = r'Django_statics\app_resources\images\output\shadow_img.png'
+
+    cv2.imwrite(segmented_froth_img2, img1)
+    cv2.imwrite(Otsu_thresholding_img2, opening)
+    cv2.imwrite(shadow_img2, markers1_img)
+
     return total_number, list_percentages, list_averages
 
 
-def image_processus():
-    path_img = 'video_detection/statics/images/rl4_pb15-7-0.jpg'
+def image_processus(path_img):
     size_img = (500, 500)
     list_max_group_perimeters = [100, 300, 500]
     list_max_group_areas = [500, 1000, 2000]
@@ -246,10 +258,42 @@ def image_processus():
         display_results=True)
     # if display_results == True the function will display the images results in each step of segmentation
 
-    print(total_number)
-    #print(list_percentages)
-    #print(list_averages)
-    
-    
+    return total_number, list_percentages, list_averages
 
-    return total_number, list_percentages, list_averages 
+
+def extractImages(pathIn):    
+    pathOut = r'static/app_resources/images/inputs'
+    count = 0
+    try:
+        vidcap = cv2.VideoCapture(pathIn)
+        if not vidcap.isOpened():
+            print("Cannot open the file !")
+    except Exception as e:
+        print(e)
+    vid = pathIn.split("/")[3].split(".")[0]
+    #vid= pathIn.split(".")[0]
+    print(vid)
+    success, image = vidcap.read()
+    success = True
+    while success:
+        # added this line
+        vidcap.set(cv2.CAP_PROP_POS_MSEC, (count * 1000))
+        success, image = vidcap.read()
+        if (success != False):            
+            image = crop(image, 250, 250)            
+            output_images_path = pathOut + "/" + vid + "-%d.jpg" % count
+            # save frame as JPEG file
+            cv2.imwrite(output_images_path, image)
+            print("frame " + vid + "-%d.jpg" % count, success)
+        count = count + 1
+        yield output_images_path
+
+
+def crop(Image, offsetHauteur, offsetLargeur):
+    hauteur = Image.shape[0]
+    largeur = Image.shape[1]
+    croped_image = Image[(hauteur // 2 - offsetHauteur):(hauteur // 2 +
+                                                         offsetHauteur),
+                         (largeur // 2 - offsetLargeur):(largeur // 2 +
+                                                         offsetLargeur)]
+    return croped_image

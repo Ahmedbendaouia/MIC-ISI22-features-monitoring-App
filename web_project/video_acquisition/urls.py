@@ -14,16 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import handler404, handler500
-from django.contrib import admin 
-from django.urls import path,include
-from . import views 
+from django.contrib import admin
+from django.urls import path, include
+from . import views
 
 urlpatterns = [
-    path('', views.home),   
+    path('', views.home),
     path('admin/', admin.site.urls),
-    path('video_detection/',include('video_detection.urls')),        
-    path("login/", views.loginPage,name='login'),
-    path("logout/", views.logoutPage,name='logout')    
+    path("login/", views.loginPage, name='login'),
+    path("logout/", views.logoutPage, name='logout'),
+    path('video_detection/', include('video_detection.urls'))
 ]
 
 handler404 = views.error_404

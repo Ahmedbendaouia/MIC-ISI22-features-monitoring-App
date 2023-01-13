@@ -14,8 +14,7 @@
       name="description"
       content="Ample Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework"
     />
-    <meta name="robots" content="noindex,nofollow" />
-    <title>Affichage des paramètres</title>
+    <meta name="robots" content="noindex,nofollow" />    
     <link
       rel="canonical"
       href="https://www.wrappixel.com/templates/ample-admin-lite/"
@@ -24,18 +23,14 @@
     <link
       rel="icon"
       type="image/png"
-      sizes="16x16"
-      href="{% static 'plugins/images/large/logo.png' %}"
+      sizes="auto"
+      href="{% static 'plugins/images/logos/logo.png' %}"
     />
     <!-- Custom CSS -->
     <link
       href="{% static 'plugins/bower_components/chartist/dist/chartist.min.css' %}"
       rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.css' %}"
-    />
+    />    
     <!-- Custom CSS -->
     <link href="{% static 'css/style.min.css'%}" rel="stylesheet" />
   </head>
@@ -73,7 +68,9 @@
               <b class="logo-icon">
                 <!-- Dark Logo icon -->
                 <img
-                  src="{% static 'plugins/images/large/logo2.jpeg'%}"
+                  src="{% static 'plugins/images/logos/logo.png'%}"
+                  width="60"
+                  height="60"
                   alt="homepage"
                 />
               </b>
@@ -82,7 +79,9 @@
               <span class="logo-text">
                 <!-- dark Logo text -->
                 <img
-                  src="{% static 'plugins/images/uca.png'%}"
+                  src="{% static 'plugins/images/logos/new_reminex.png'%}"
+                  width="150"
+                  height="70"
                   alt="homepage"
                 />
               </span>
@@ -143,8 +142,6 @@
                   <span class="text-white font-medium">logout</span></a
                 >
               </li>
-
-              <!-- User profile and search -->
             </ul>
           </div>
         </nav>
@@ -164,52 +161,22 @@
               <li class="sidebar-item pt-2">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="/video_detection/display/"
+                  href="/video_detection/Flotation_froth/"
                   aria-expanded="false"
                 >
-                  <i class="far fa-clock" aria-hidden="true"></i>
-                  <span class="hide-menu">video display</span>
+                  <i class="fas fa-file-video" aria-hidden="true"></i>
+                  <span class="hide-menu">Flotation froth display</span>
                 </a>
               </li>
 
               <li class="sidebar-item">
                 <a
                   class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="fontawesome.html"
+                  href="/video_detection/Bubble_monitoring/"
                   aria-expanded="false"
                 >
-                  <i class="fa fa-font" aria-hidden="true"></i>
-                  <span class="hide-menu">Icon</span>
-                </a>
-              </li>
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="map-google.html"
-                  aria-expanded="false"
-                >
-                  <i class="fa fa-globe" aria-hidden="true"></i>
-                  <span class="hide-menu">Google Map</span>
-                </a>
-              </li>
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="blank.html"
-                  aria-expanded="false"
-                >
-                  <i class="fa fa-columns" aria-hidden="true"></i>
-                  <span class="hide-menu">Blank Page</span>
-                </a>
-              </li>
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="404.html"
-                  aria-expanded="false"
-                >
-                  <i class="fa fa-info-circle" aria-hidden="true"></i>
-                  <span class="hide-menu">Error 404</span>
+                  <i class="fas fa-file-image" aria-hidden="true"></i>
+                  <span class="hide-menu">Bubble size monitoring</span>
                 </a>
               </li>
             </ul>
@@ -229,7 +196,7 @@
         <!-- End Container fluid  -->
         <!-- footer -->
         <footer class="footer text-center">
-          Copyright &copy; Master ISI 2022
+          Copyright &copy; Master ISI 2022/2023 [belcaid - Sadqi]
         </footer>
         <!-- End footer -->
       </div>
@@ -244,7 +211,7 @@
     <!-- Bootstrap tether Core JavaScript -->
     <script src="{% static 'bootstrap/dist/js/bootstrap.bundle.min.js'%}"></script>
     <script src="{% static 'js/app-style-switcher.js'%}"></script>
-    <script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js'%}"></script>
+    <!--<script src="{% static 'plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js'%}"></script>-->
     <!--Wave Effects -->
     <script src="{% static 'js/waves.js'%}"></script>
     <!--Menu sidebar -->
@@ -253,11 +220,11 @@
     <script src="{% static 'js/custom.js'%}"></script>
     <!--This page JavaScript -->
     <!--chartis chart-->
-    <script src="{% static 'js/chart.js'%}"></script>
+    <!--<script src="{% static 'js/chart.js'%}"></script>
     <script src="{% static 'js/chart_image_proccess.js'%}"></script>
-    
-    <script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js'%}"></script>
-    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js'%} "></script>
+    -->
+    <!--<script src="{% static 'plugins/bower_components/chartist/dist/chartist.min.js'%}"></script>
+    <script src="{% static 'plugins/bower_components/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js'%} "></script>-->
     <script src="{% static 'js/pages/dashboards/dashboard1.js' %} "></script>
   </body>
 </html>
