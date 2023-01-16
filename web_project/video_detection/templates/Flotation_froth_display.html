@@ -5,12 +5,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">flotation froth</h5>
-        <!--<img
-          src="{% url 'flotation_froth_frame'  %}"
-          class="w-100"
-          title="flotation froth"
-          allowfullscreen
-        />-->
+        <img id="flotation" src="" class="w-100" title="flotation froth" />
       </div>
     </div>
   </div>
@@ -18,11 +13,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Otsu thresholding</h5>
-        <!-- <img
-          src=" {% url 'Otsu_frame'  %}"
-          class="w-100"
-          title="Otsu thresholding"
-        />-->
+        <img id="otsu" src="" class="w-100" title="Otsu thresholding" />
       </div>
     </div>
   </div>
@@ -30,11 +21,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Sparse optical flow</h5>
-        <!--<img
-          src="{% url 'spare_frame'  %}"
-          class="w-100"
-          title="Sparse optical flow"
-        />-->
+        <img id="sparse" src="" class="w-100" title="Sparse optical flow" />
       </div>
     </div>
   </div>
@@ -173,6 +160,14 @@
   socket.onmessage = function (event) {
     var data = JSON.parse(event.data);
     console.log(data);
+
+    document.getElementById("flotation").src =
+      "data:image/png;base64," + data.flotation_vid;
+    document.getElementById("otsu").src =
+      "data:image/png;base64," + data.otsu_vid;
+    document.getElementById("sparse").src =
+      "data:image/png;base64," + data.sparse_vid;
+
     chart.data.datasets[0].data.push({
       x: Date.now(),
       y: data.vx,

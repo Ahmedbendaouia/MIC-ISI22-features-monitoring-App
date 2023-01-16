@@ -270,7 +270,7 @@ def extractImages(pathIn):
             print("Cannot open the file !")
     except Exception as e:
         print(e)
-    vid = pathIn.split("/")[3].split(".")[0]
+    vid = pathIn.split("/")[-1].split(".")[0]
     #vid= pathIn.split(".")[0]
     print(vid)
     success, image = vidcap.read()

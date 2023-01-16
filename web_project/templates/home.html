@@ -154,7 +154,13 @@
     </div>
     <!--Content ends-->
 
-
+<script>
+  if (window.WebSocket) {
+    console.log("This browser supports WebSockets");
+  } else {
+    console.log("This browser does not support WebSockets");
+  }
+</script>
 
     {% endblock %}
 

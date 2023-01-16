@@ -86,7 +86,7 @@ DATABASES = {
 #This allows Django to use Redis as a backend for storing channels 
 #And handling asynchronous communication using the Channels library.
 #this is not yet completed ...
-"""CHANNEL_LAYERS = {
+CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
@@ -94,7 +94,7 @@ DATABASES = {
         }
     }
 }
-"""
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 

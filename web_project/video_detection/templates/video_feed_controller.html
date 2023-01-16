@@ -1,0 +1,68 @@
+{% extends 'base.html' %} {% block content %}
+<title>video feed</title>
+
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title ">Uploading video feed</h3>
+
+                <form class="was-validated" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea name='description' class="form-control is-invalid" id="description" placeholder="Required example textarea" required></textarea>                        
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="video_feed" class="form-label">Video feed</label>
+                        <input type="file" name="video" class="form-control" id="video_feed" aria-label="file example" required />                        
+                    </div>
+
+                    <div class="mb-3">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#id</th>
+                <th>Description</th>
+                <th>Path</th>
+                <th>Upload Time</th>
+                <th>is in charge </th>
+                <th>action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for video in  video_feeds %}                                                
+                <tr>
+                <td>{{video.id}}</td>
+                <td>{{video.description}}</td>
+                <td>{{video.path}}</td>
+                <td>{{video.uploaded_at}}</td>
+                <td>{{video.is_in_charge}}</td>
+                <td><a class="btn btn-primary" href="{% url 'video_feed' video.id %}">charge</a>
+                    <a class="btn btn-danger" href="{% url 'delete_feed' video.id %}">Delete </a>
+                </td>
+              </tr>                            
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>      
+<div>
+{% endblock %}
+
+
+</div>
+</div>

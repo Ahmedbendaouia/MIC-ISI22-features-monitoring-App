@@ -1,3 +1,4 @@
+import base64
 import cv2 as cv
 import numpy as np
 import time
@@ -109,7 +110,7 @@ class video_feed(object):
         # calculate the average speed in x and y axis
         average_vx = sum(vx_list) / len(vx_list)
         average_vy = sum(vy_list) / len(vy_list)
-        avrage_v=math.sqrt(pow(average_vx, 2) + pow(average_vy, 2))
+        avrage_v = math.sqrt(pow(average_vx, 2) + pow(average_vy, 2))
         # Overlays the optical flow tracks on the original frame
         self.output = cv.add(self.frame, self.mask)
         # Updates previous frame
@@ -126,27 +127,39 @@ class video_feed(object):
         speed = np.zeros((250, 600), dtype=np.uint8)
         # whritw the speed result in the video
         text_vx = "vx = " + str(average_vx)
-        text_vy = "vy = " + str(average_vy)        
-        text_v = "v = " + str(math.sqrt(pow(average_vx, 2) + pow(average_vy, 2)))
+        text_vy = "vy = " + str(average_vy)
+        text_v = "v = " + str(
+            math.sqrt(pow(average_vx, 2) + pow(average_vy, 2)))
         font = cv.FONT_HERSHEY_SIMPLEX
-        fontScale = 1        
+        fontScale = 1
         cv.putText(speed, text_vx, (50, 50), font, fontScale, (255, 0, 0), 3)
         cv.putText(speed, text_vx, (50, 50), font, fontScale, (255, 0, 0), 3)
         cv.putText(speed, text_vy, (50, 100), font, fontScale, (255, 0, 0), 3)
         cv.putText(speed, text_vy, (50, 100), font, fontScale, (255, 0, 0), 3)
         cv.putText(speed, text_v, (50, 150), font, fontScale, (255, 0, 0), 3)
-        
-                
-        speed_list={"vx":average_vx,"vy":average_vy,"v":avrage_v}
-                
+
         _, frame = cv.imencode('.jpg', self.frame)
         _, gray = cv.imencode('.jpg', self.gray)
         _, output = cv.imencode('.jpg', self.output)
 
-        return speed_list, frame.tobytes(), gray.tobytes(
-        ), output.tobytes()
-        
- 
+        #encode the binary data of the image as a Base64 string
+        #this you can send it inside JSON object in a channel
+        flotation_froth = base64.b64encode(frame.tobytes()).decode()
+        Otsu_thresholding = base64.b64encode(gray.tobytes()).decode()
+        Sparse_optical_flow = base64.b64encode(output.tobytes()).decode()
+
+        #in this dic we gather all of the elements of our video streameing from the 3 frames to the speeds
+        streaming_dic = {
+            "vx": average_vx,
+            "vy": average_vy,
+            "v": avrage_v,
+            "flotation_vid": flotation_froth,
+            "otsu_vid": Otsu_thresholding,
+            "sparse_vid": Sparse_optical_flow
+        }
+
+        return streaming_dic
+
     def crop_image(self, Image, offsetHauteur, offsetLargeur):
         hauteur = Image.shape[0]
         largeur = Image.shape[1]
@@ -157,32 +170,8 @@ class video_feed(object):
         return croped_image
 
 
-#method to return Sparse optical flow frame as an image/jpg type 
-def gen_spare(video_feed):
+#method to return speed and frames as a list of avarage_vx ,vy , v , spare frame ,otsu frame and floation frame
+def gen_speed(video_feed):
     while True:
-        speed, frame, gray, output = video_feed.get_frames()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + output + b'\r\n\r\n')
-
-#method to return  Otsu thresholding frame as an image/jpg type 
-def gen_Otsu(video_feed):
-    while True:
-        speed, frame, gray, output = video_feed.get_frames()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + gray + b'\r\n\r\n')
-
-#method to return flotation froth frame as an image/jpg type 
-def gen_frame(video_feed):
-    while True:
-        speed, frame, gray, output = video_feed.get_frames()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-#method to return speed as a list of avarage_vx ,vy and v
-def gen_speed(video_feed):    
-    while True:
-        speed, frame, gray, output = video_feed.get_frames()                
-        yield speed
-        
-
-        
+        streaming_dic = video_feed.get_frames()
+        yield streaming_dic

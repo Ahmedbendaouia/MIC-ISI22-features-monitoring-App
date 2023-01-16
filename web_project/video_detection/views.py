@@ -1,8 +1,6 @@
-from django.shortcuts import render
-from django.http import StreamingHttpResponse
-from django.views.decorators import gzip
-from . import video_model as vid_mod
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from .models import Video_feed
 # Create your views here.
 
 
@@ -16,61 +14,30 @@ def Flotation_froth_display_page(request):
     return render(request, 'Flotation_froth_display.html')
 
 
+@login_required(login_url='login')
+def video_feed_page(request):
+    videos = Video_feed.objects.all()
+    if request.method == 'POST':
+        file = request.FILES['video']
+        description=request.POST['description']
+        video = Video_feed.objects.create(description=description,path=file)
+        video.save()
 
-@gzip.gzip_page
-def spare_frame(request):
-    try:
-        pathVideo = r"static\app_resources\videos\rl4_pb8-7.mp4"
-        cam = vid_mod.video_feed(pathVideo)
-        print("spare_frame method is working ........")
-        return StreamingHttpResponse(
-            vid_mod.gen_spare(cam),
-            content_type="multipart/x-mixed-replace;boundary=frame")
-    except Exception as e:
-        print(e)
-        print("spare frame Streaming not working !")
-
-
-@gzip.gzip_page
-def Otsu_frame(request):
-    try:
-        pathVideo = r"static\app_resources\videos\rl4_pb8-7.mp4"
-        cam = vid_mod.video_feed(pathVideo)
-
-        return StreamingHttpResponse(
-            vid_mod.gen_Otsu(cam),
-            content_type="multipart/x-mixed-replace;boundary=frame")
-    except Exception as e:
-        print(e)
-        print("Otsu frame streaming is not working !")
+    return render(request,
+                  'video_feed_controller.html',
+                  context={'video_feeds': videos})
 
 
-@gzip.gzip_page
-def flotation_froth_frame(request):
-    try:
-        pathVideo = r"static\app_resources\videos\rl4_pb8-7.mp4"
-        cam = vid_mod.video_feed(pathVideo)
-
-        return StreamingHttpResponse(
-            vid_mod.gen_frame(cam),
-            content_type="multipart/x-mixed-replace;boundary=frame")
-    except Exception as e:
-        print(e)
-        print("flotation froth frame streaming is not working !")
+@login_required(login_url='login')
+def toggle_in_charge(request, pk):
+    my_object = Video_feed.objects.get(pk=pk)
+    my_object.is_in_charge = not my_object.is_in_charge
+    my_object.save()
+    return redirect("video_feed_page")
 
 
-#this is method needs to be repaired
-#this method works on streaming data (such as string ,Integer ...) using StreamingHttpResponse and catching it with XMLHttpResponse (AJAX)
-#still has some problems to fix , that's why we replace it with Django Channels
-def speed_stream(request):
-    try:
-        pathVideo = r"static\app_resources\videos\rl4_pb8-7.mp4"
-        cam = vid_mod.video_feed(pathVideo)
-        stream = vid_mod.gen_speed(cam)
-        print(stream)
-        return StreamingHttpResponse(vid_mod.gen_speed(cam),
-                                     status=200,
-                                     content_type='text/event-stream')
-    except Exception as e:
-        print(e)
-        print("speed method is not working !")
+def delete_video_feed(request,pk):
+    instance = get_object_or_404(Video_feed, pk=pk)
+    instance.path.delete()
+    instance.delete()
+    return redirect("video_feed_page")
