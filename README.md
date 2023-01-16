@@ -1,12 +1,11 @@
 # MIC-ISI22-features-monitoring-App
 => Achievements:     
--streaming video using OpenCV and streaminghttpresponse  (3 frames)   
--streaming parameters extracted from the video streaming (Velocity monitoring vx,vy,v)   
--streaming Statistics of Bubble size monitoring from images extracted from a video feed using channels (pip install channels==3.0.4 ).     
+-Streaming video using OpenCV and channels  (3 frames)   
+-Streaming parameters extracted from the video streaming (Velocity monitoring vx,vy,v)    
+-Streaming Statistics of Bubble size monitoring from images extracted from a video feed using channels (pip install channels==3.0.4 ) and 3 frames (shadow, Segmented froth, and Otsu Thresholding).  
+-Creating an interface that allows users to upload video locally to a folder 'media/videos' in the project and use it as a video feed for the application. It also controls which video feed will be working with and deleting the video.    
 => Difficulties:    
--streaminghttpresponse and channels don't work together unless there is some kind of synchronization .using Redis or something like it may solve the problem or even trying to stream video using channels.   
--the synchronization on WebSockets is not working yet, which means that after the page is refreshed the WebSocket still works in the background but the connection is disconnected.    
--the images on the Bubble size monitoring page don't update although the images are updated in the static folders when streaming.  
--problems concerning the closing of connecting when a user reloads a page or leaves it. also reconnecting after returning to the same page.  
--streaminghttpresponse streams a single video at a time, not 3 at the same time which is not what it should be. that's why better using an alternative way to stream the frames with their parameters at a single channel or request.   
--being aware of the versions used to avoid incompatible packages .
+-Being aware of the versions used to avoid incompatible packages. also if the project is running on a global environment or a specific environment (using pipenv) which is better.  
+=>Perspective :   
+-Working with live streaming feed video such as cameras rather than a local video.  
+
